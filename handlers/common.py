@@ -1,4 +1,4 @@
-from aiogram import Router, types
+from aiogram import Bot, Router, types
 from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
@@ -10,6 +10,8 @@ from botrequests import apsched
 import sqlite3
 
 router = Router()
+
+scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
 
 
 @router.message(Command(commands=["start"]))
@@ -35,24 +37,14 @@ async def cmd_start(message: Message, state: FSMContext):
     connection.commit()
     connection.close()
 
-    scheduler = AsyncIOScheduler(timezone='Europe/Moscow')
-    scheduler.add_job(apsched.send_message_cron, trigger='cron', hour='21', jitter=3600, kwargs={'message': message})
-    scheduler.start()
+    if not scheduler.get_jobs():
+        scheduler.add_job(apsched.send_message_cron, trigger='cron', hour='21', jitter=3600, kwargs={'message': message})
+        scheduler.start()
 
     builder = InlineKeyboardBuilder()
     builder.add(types.InlineKeyboardButton(text="\U0001F4E5 Создать запрос", callback_data="create_request"))
     builder.add(types.InlineKeyboardButton(text="\U0001F4DA Архив отслеживаний", callback_data="archive"))
     builder.add(types.InlineKeyboardButton(text="\U00002753 О боте", callback_data="about"))
     builder.adjust(2)
-    await message.answer('\U0001F44B Привет, {}!\n\n\U0001F50D Начнём охоту на лучшие цены!'.format(message.from_user.first_name),
-                         reply_markup=builder.as_markup())
-
-
-@router.message(Command(commands=["continue"]))
-async def cmd_cancel(message: Message, state: FSMContext):
-    await state.clear()
-    builder = InlineKeyboardBuilder()
-    builder.add(types.InlineKeyboardButton(text="\U0001F4E5 Создать запрос", callback_data="create_request"))
-    builder.add(types.InlineKeyboardButton(text="\U0001F4DA Архив отслеживаний", callback_data="archive"))
     await message.answer('\U0001F44B Привет, {}!\n\n\U0001F50D Начнём охоту на лучшие цены!'.format(message.from_user.first_name),
                          reply_markup=builder.as_markup())

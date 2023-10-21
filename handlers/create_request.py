@@ -79,7 +79,7 @@ async def result(message: Message, state: FSMContext):
                 .format(market=market, title=title, url=url, current_price=current_price, desired_price=desired_price)
 
             await message.answer_photo(photo=img, caption=text, parse_mode='HTML')
-            await message.answer(text='Хотите продолжить работу с ботом? /continue')
+            await message.answer(text='Хотите продолжить работу с ботом? /start')
             await state.clear()
     except:
         await message.answer(text='\U0000274C Некорректная цена.\n'

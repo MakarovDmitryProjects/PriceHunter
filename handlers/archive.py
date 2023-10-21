@@ -32,9 +32,9 @@ async def history(callback: types.CallbackQuery):
                         current_price=current_price, desired_price=desired_price)
 
             await callback.message.answer_photo(photo=img, caption=text, parse_mode='HTML')
-        await callback.message.answer(text='Хотите продолжить работу с ботом? /continue')
+        await callback.message.answer(text='Хотите продолжить работу с ботом? /start')
 
     else:
         await callback.message.answer(text='\U0000274C Ваша история поиска пуста! \U0000274C')
-        await callback.message.answer(text='Хотите продолжить работу с ботом? /continue')
+        await callback.message.answer(text='Хотите продолжить работу с ботом? /start')
 
